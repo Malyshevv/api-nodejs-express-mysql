@@ -2,6 +2,7 @@ const mysql = require('mysql2')
 
 module.exports = function(app,db) {
 
+    /**SEND QUERY FUNC**/
     function sendQeury(res,pool,query,insertData) {
         pool.execute(query,insertData)
             .then(result =>{ 
