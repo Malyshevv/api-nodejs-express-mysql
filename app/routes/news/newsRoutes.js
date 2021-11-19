@@ -1,11 +1,13 @@
 const mysql = require('mysql2')
+const {firewall,expressAccessToken} = require('../../../config/accsess')
 
 module.exports = function(app,db) {
 
     /**SEND QUERY FUNC**/
     function sendQeury(res,pool,query,insertData) {
         pool.execute(query,insertData)
-            .then(result =>{ 
+            .then(result =>{
+                res.setHeader('Content-Type', 'application/json')
                 res.send(result[0])
             })
             .then(() => {
@@ -17,7 +19,7 @@ module.exports = function(app,db) {
     }
 
     /**get all posts METHOD - GET (http://localhost:8000/news/) **/
-    app.get('/news/', (req,res) => {
+    app.get('/news/', expressAccessToken,firewall, (req,res) => {
         const pool = mysql.createPool(db.configDB).promise();
         const query = "SELECT * FROM news";
 
@@ -25,7 +27,8 @@ module.exports = function(app,db) {
     })
 
     /**get singl posts METHOD - GET (http://localhost:8000/news/ID)**/
-    app.get('/news/:id', (req,res) => {
+    app.get('/news/:id',expressAccessToken,firewall, (req,res) => {
+        //  #swagger.parameters['id'] = { description: 'News ID' }
         const filter = `id = ${req.params.id}`
         const pool = mysql.createPool(db.configDB).promise();
         const query = `SELECT * FROM news WHERE ${filter}`;
@@ -34,8 +37,8 @@ module.exports = function(app,db) {
     })
 
     /**INSERT posts METHOD - POST (http://localhost:8000/news/ **/
-    app.post('/news/', (req,res) => {
-        const insertData = Object.values(req.body); 
+    app.post('/news/', expressAccessToken,firewall,(req,res) => {
+        const insertData = Object.values(req.body);
         const columns = [
             'title',
             'description',
@@ -43,14 +46,14 @@ module.exports = function(app,db) {
         ]
         const query = `INSERT INTO news(${columns}) VALUES (?,?,?)`;
         const pool = mysql.createPool(db.configDB).promise();
-        
+
         sendQeury(res,pool,query,insertData)
     })
 
     /**UPDATE posts METHOD - PUT (http://localhost:8000/news/ID **/
-    app.put('/news/:id', (req,res) => {
+    app.put('/news/:id', expressAccessToken,firewall,(req,res) => {
         const filter = `id = ${req.params.id}`
-        const insertData = Object.values(req.body); 
+        const insertData = Object.values(req.body);
         const columns = [
             'title = ?',
             'description = ?',
@@ -58,16 +61,16 @@ module.exports = function(app,db) {
         ]
         const query = `UPDATE news SET ${columns} WHERE ${filter}`;
         const pool = mysql.createPool(db.configDB).promise();
-        
+
         sendQeury(res,pool,query,insertData)
     })
 
     /** DELETE posts METHOD - DELETE (http://localhost:8000/news/ID **/
-    app.delete('/news/:id', (req,res) => {
+    app.delete('/news/:id', expressAccessToken,firewall,(req,res) => {
         const filter = `id = ${req.params.id}`
         const query = `DELETE FROM news WHERE ${filter}`;
         const pool = mysql.createPool(db.configDB).promise();
-        
+
         sendQeury(res,pool,query)
     })
 }

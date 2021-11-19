@@ -19,9 +19,16 @@
   "homepage": "https://github.com/Malyshevv/api-nodejs-express-mysql#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.6",
     "express": "^4.17.1",
+    "express-access-token": "^1.1.5",
+    "express-list-endpoints": "^6.0.0",
+    "express-oas-generator": "^1.0.41",
+    "express-sitemap-html": "^1.2.4",
     "hbs": "^4.1.2",
-    "mysql2": "^2.3.3-rc.0"
+    "jsonfile": "^6.1.0",
+    "mysql2": "^2.3.3-rc.0",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "nodemon": "^2.0.14"
