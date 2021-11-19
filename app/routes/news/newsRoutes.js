@@ -37,6 +37,7 @@ module.exports = function(app,db) {
 
     /**INSERT posts METHOD - POST (http://localhost:8000/news/ **/
     app.post('/news/', expressAccessToken,firewall,(req,res) => {
+        const params = { text: req.body.body, title: req.body.title, description: req.body.description }
         const insertData = Object.values(req.body);
         const columns = [
             'title',
@@ -53,6 +54,7 @@ module.exports = function(app,db) {
     app.put('/news/:id', expressAccessToken,firewall,(req,res) => {
         const filter = `id = ${req.params.id}`
         const insertData = Object.values(req.body);
+        const params = { title: req.body.title, description: req.body.description, text: req.body.text}
         const columns = [
             'title = ?',
             'description = ?',
