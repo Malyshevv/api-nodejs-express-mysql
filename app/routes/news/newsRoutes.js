@@ -28,7 +28,6 @@ module.exports = function(app,db) {
 
     /**get singl posts METHOD - GET (http://localhost:8000/news/ID)**/
     app.get('/news/:id',expressAccessToken,firewall, (req,res) => {
-        //  #swagger.parameters['id'] = { description: 'News ID' }
         const filter = `id = ${req.params.id}`
         const pool = mysql.createPool(db.configDB).promise();
         const query = `SELECT * FROM news WHERE ${filter}`;
