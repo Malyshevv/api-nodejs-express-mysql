@@ -3,6 +3,7 @@
 
 # API файл конфиг
 - /config/db.js
+- /config/access.js
 
 # API методы
 - /news/id - method: GET, info: singl post
@@ -14,3 +15,5 @@
 # Info
 - MAMPRO https://www.mamp.info/en/mamp-pro/windows/
 - Postman - https://www.postman.com/downloads/
+
+
