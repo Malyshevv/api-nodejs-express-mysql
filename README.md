@@ -17,4 +17,29 @@
 - MAMPRO https://www.mamp.info/en/mamp-pro/windows/
 - Postman - https://www.postman.com/downloads/
 
+# 
+
+Fix corss error
+
+- Step 1
+```
+npm install cors
+```
+- Step 2 
+add in server.js after ```require('./app/routes')(app,db);```
+```
+app.use(cors());
+```
+- Step 3
+
+add in function sendQuery 
+```
+res.setHeader('Access-Control-Allow-Origin', '*');
+res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE'); // If needed
+res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type'); // If needed
+res.setHeader('Access-Control-Allow-Credentials', true); // If needed
+```
+
+
+
 
