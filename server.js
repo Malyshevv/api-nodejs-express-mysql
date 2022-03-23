@@ -1,38 +1,68 @@
+/*MAIN*/
 const express = require('express')
-const mysql = require('mysql2')
+const path = require("path");
+const expressHbs = require('express-handlebars')
+const hbs = require("hbs");
+/* LOGGER */
+const pino = require("pino")("./logs/pino-logger.log");
+const expressPino = require("express-pino-logger")({logger: pino});
+/* MYSQL */
+const mysql = require('mysql2');
+const db = require('./config/db');
+/* MAIL */
+const nodemailer = require('nodemailer');
+/* DOC */
+const sitemap = require('./app/swagger/express-sitemap-html')
+const { swDocument } = require('./config/swagger/openapi')
+/* OTHER */
+const cors = require('cors');
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser');
 
-
-const sitemap = require('express-sitemap-html')
-const listEndpoints = require("express-list-endpoints");
-
-const db = require('./config/db')
-
+/* App */
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8080;
 
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json())
+app.use(cors());
 
+app.engine(
+    'hbs',
+    expressHbs.engine({
+        layoutsDir: 'views/layouts',
+        defaultLayout: 'layout',
+        extname: 'hbs',
+    })
+)
 
-const pool = mysql.createPool(db.configDB)
+/* Logger */
+app.use(expressPino);
 
-pool.end(function(err) {
-    if (err) {
-        throw Error("Error: " + err.message);
-    } else {
-        console.log('Mysql coneection is successfully')
+/*App start*/
+if(!mysql.createConnection(db.configDB)) {
+    throw Error("Error: ");
+} else {
+    require('./app/routes')(app,db,sitemap);
 
-        require('./app/routes')(app,db);
+    sitemap.swagger(swDocument, app);
 
-        /**Swagger sitemap - all methods */
-        app.get('/sitemap', sitemap(app))
-        sitemap.swagger('My API', app)
-        /* let endPointReq = listEndpoints(app)*/
+    /* template dir*/
+    app.set("views", path.join(__dirname, "views"));
+    hbs.registerPartials(__dirname + '/views/partials')
+    app.set("view engine", "hbs");
+    app.use(express.static(path.join(__dirname, "public")));
 
-        app.listen(port, () => {
-            console.log('API IS UP - http://localhost:'+port)
-        })
-    }
-});
+    /* route template*/
+    app.get("/", (req, res) => {
+        res.render("index.hbs", { title: "Home" });
+    });
+    app.get('*', function(req, res){
+        res.render("index", { title: "Not Found" });
+    });
+
+    app.listen(port, () => {
+        console.log('API IS UP - http://localhost:'+port);
+    });
+}
