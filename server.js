@@ -59,7 +59,7 @@ if(!mysql.createConnection(db.configDB)) {
         res.render("index.hbs", { title: "Home" });
     });
     app.get('*', function(req, res){
-        res.render("index", { title: "Not Found" });
+        res.render("404.hbs", { title: "Not Found" });
     });
 
     app.listen(port, () => {
